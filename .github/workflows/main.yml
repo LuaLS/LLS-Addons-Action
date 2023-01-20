@@ -19,11 +19,11 @@ jobs:
           node-version: 16.x
           cache: "npm"
       - run: npm ci
-      - run: npm run build
+      - run: npm run package
       - name: Zip build files
-        run: cp action.yml out/action.yml && zip -r out.zip out
+        run: cp action.yml dist/action.yml && zip -r dist.zip dist
       - uses: softprops/action-gh-release@v1
         name: Release
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: out.zip
+          files: dist.zip
