@@ -32,7 +32,7 @@ async function run() {
       const sha = submoduleMatch[1];
       const submodulePath = submoduleMatch[2];
 
-      const infoFilePath = path.join(submodulePath, "info.json");
+      const infoFilePath = path.join(submodulePath, "..", "info.json");
 
       const rawInfo = await fs.promises.readFile(infoFilePath);
       const info = JSON.parse(rawInfo.toString());
