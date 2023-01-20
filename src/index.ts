@@ -1,28 +1,50 @@
 import * as core from "@actions/core";
-import * as github from "@actions/github";
 import simpleGit from "simple-git";
+import path from "path";
+import * as fs from "fs";
 
 const submoduleRegex = /([A-z0-9]+) (.*\/.*) .*/g;
-const submodules = [];
+
+async function getDirectorySize(directory: string): Promise<number> {
+  let totalSize = 0;
+
+  const files = await fs.promises.readdir(directory);
+  for (const file of files) {
+    const filePath = `${directory}/${file}`;
+    const fileStat = await fs.promises.stat(filePath);
+    if (fileStat.isDirectory()) {
+      totalSize += await getDirectorySize(filePath);
+    } else {
+      totalSize += fileStat.size;
+    }
+  }
+
+  return totalSize;
+}
 
 async function run() {
   try {
     const git = simpleGit();
 
-    const submoduleChanges = await git.diff(["--name-only"]);
+    const submoduleList = await git.subModule();
 
-    console.log(submoduleChanges);
+    for (const submoduleMatch of submoduleList.matchAll(submoduleRegex)) {
+      const sha = submoduleMatch[1];
+      const submodulePath = submoduleMatch[2];
 
-    const GitHubToken = core.getInput("GH_token");
-    const GitLabToken = core.getInput("GL_token");
+      const infoFilePath = path.join(submodulePath, "info.json");
 
-    if (!GitHubToken) throw new Error("GitHub token not specified");
-    if (!GitLabToken) throw new Error("GitLab token not specified");
+      const rawInfo = await fs.promises.readFile(infoFilePath);
+      const info = JSON.parse(rawInfo.toString());
 
-    // const octokit = github.getOctokit(GitHubToken);
+      info.size = await getDirectorySize(submodulePath);
+      info.hasPlugin = fs.existsSync(path.join(submodulePath, "module", "plugin.lua"));
+
+      fs.promises.writeFile(infoFilePath, JSON.stringify(info, null, "  "));
+    }
   } catch (error) {
     if (error instanceof Error) return core.setFailed(error.message);
-    return core.setFailed(error);
+    return core.setFailed(error as string);
   }
 }
 

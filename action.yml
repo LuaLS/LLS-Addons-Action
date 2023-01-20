@@ -1,13 +1,6 @@
 name: LLS-Addons-Metadata
 description: |
   Get the metadata for LLS-Addons and save it to their info.json.
-inputs:
-  GH_token:
-    description: GitHub API Token
-    required: true
-  GL_token:
-    description: GitLab API token
-    required: true
 runs:
   using: node16
   main: index.js
