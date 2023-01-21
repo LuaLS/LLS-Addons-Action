@@ -50,7 +50,10 @@ async function run() {
         `${submodulePath} | Size: ${info.size} | Plugin: ${info.hasPlugin}`
       );
 
-      fs.promises.writeFile(infoFilePath, JSON.stringify(info, null, "  "));
+      fs.promises.writeFile(
+        infoFilePath,
+        `${JSON.stringify(info, null, "  ")}\n`
+      );
     }
   } catch (error) {
     if (error instanceof Error) return core.setFailed(error.message);
