@@ -5,6 +5,10 @@ import * as fs from "fs";
 
 const submoduleRegex = /([A-z0-9]+) (.*\/.*) .*/g;
 
+/** Calculate the size of a directory, recursively
+ * @param directory The path to the directory
+ * @return The size of the directory in bytes
+ */
 async function getDirectorySize(directory: string): Promise<number> {
   let totalSize = 0;
 
@@ -38,7 +42,9 @@ async function run() {
       const info = JSON.parse(rawInfo.toString());
 
       info.size = await getDirectorySize(submodulePath);
-      info.hasPlugin = fs.existsSync(path.join(submodulePath, "module", "plugin.lua"));
+      info.hasPlugin = fs.existsSync(
+        path.join(submodulePath, "module", "plugin.lua")
+      );
 
       fs.promises.writeFile(infoFilePath, JSON.stringify(info, null, "  "));
     }
