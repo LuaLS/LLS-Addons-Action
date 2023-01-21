@@ -46,6 +46,10 @@ async function run() {
         path.join(submodulePath, "module", "plugin.lua")
       );
 
+      console.log(
+        `${submodulePath} | Size: ${info.size} | Plugin: ${info.hasPlugin}`
+      );
+
       fs.promises.writeFile(infoFilePath, JSON.stringify(info, null, "  "));
     }
   } catch (error) {
