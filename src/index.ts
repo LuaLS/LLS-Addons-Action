@@ -43,7 +43,7 @@ async function run() {
 
       info.size = await getDirectorySize(submodulePath);
       info.hasPlugin = fs.existsSync(
-        path.join(submodulePath, "module", "plugin.lua")
+        path.join(submodulePath, "plugin.lua")
       );
 
       console.log(
